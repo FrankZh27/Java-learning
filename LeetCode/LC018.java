@@ -21,7 +21,7 @@ class Solution {
                     int sum = nums[i] + nums[j] + nums[lo] + nums[hi];
                     if (sum == target){
                         ans.add(Arrays.asList(nums[i], nums[j], nums[lo], nums[hi]));
-                        while(nums[lo] == nums[lo+1] && lo < nums.length-2) lo++; 
+                        while(nums[lo] == nums[lo+1] && lo < nums.length-2) lo++;     // skiping the duplicates is important
                         while(nums[hi] == nums[hi-1] && hi > j+2) hi--;
                         lo++; hi--;
                         
