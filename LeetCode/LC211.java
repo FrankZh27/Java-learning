@@ -1,95 +1,96 @@
-public class Trie {
-    class TrieNode {
-        private boolean isEnd;
-        private TrieNode[] links;
+class WordDictionary {
+    
+    class TriNode {
+        
+        private TriNode[] links;
         final int R = 26;
+        private boolean isEnd;
         
-        public TrieNode() {
-            this.links = new TrieNode[R];
+        public TriNode() {
+            links = new TriNode[R];
+            isEnd = false;
         }
         
-        public void put(char c, TrieNode node) {
-            links[c-'a'] = node;
+        public void put(TriNode node, char c) {
+            if (node.links[c-'a'] == null) {
+                node.links[c-'a'] = new TriNode();
+            }
             return;
         }
         
-        public void setEnd(boolean val) {
-            isEnd = val;
+        public boolean isEnd(TriNode node) {
+            return node.isEnd;
+        }
+        
+        public void setEnd(TriNode node) {
+            node.isEnd = true;
             return;
         }
         
-        public boolean isEnd() {
-            return isEnd;
-        }
-        
-        public boolean containsKey(char c) {
-            if (links[c - 'a'] == null) {
+        public boolean containsKey(char c, TriNode node) {
+            if (node.links[c-'a'] == null) {
                 return false;
             }
             return true;
         }
         
-        public TrieNode getKey(char c) {
-            return links[c - 'a'];
+        public TriNode getKey(char c) {
+            return links[c-'a'];
         }
         
     }
     
-    private TrieNode root;
+    TriNode root;
+
     /** Initialize your data structure here. */
-    public Trie() {
-        this.root = new TrieNode();
+    public WordDictionary() {
+        root = new TriNode();
     }
     
-    /** Inserts a word into the trie. */
-    public void insert(String word) {
-        int sz = word.length();
-        TrieNode node = root;
-        if (sz == 0) return;
-        for (int i = 0; i < sz; i++) {
-            if (!node.containsKey(word.charAt(i))) {
-                TrieNode newNode = new TrieNode();
-                node.put(word.charAt(i), newNode);     
-            }
-            node = node.getKey(word.charAt(i));
+    /** Adds a word into the data structure. */
+    public void addWord(String word) {
+        TriNode curr = root;
+        for (int i = 0; i < word.length(); i++) {
+            curr.put(curr, word.charAt(i));
+            curr = curr.links[word.charAt(i)-'a'];
         }
-        node.setEnd(true);
+        curr.setEnd(curr);
         return;
     }
     
-    /** Returns if the word is in the trie. */
+    /** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
     public boolean search(String word) {
-        int sz = word.length();
-        TrieNode node = root;
-        if (sz == 0) return true;
-        for (int i = 0; i < sz; i++) {
-            if (!node.containsKey(word.charAt(i))) {
+        TriNode curr = root;
+        for (int i = 0; i < word.length(); i++) {
+            if (word.charAt(i) != '.') {
+                if (!curr.containsKey(word.charAt(i), curr)) {
+                     return false;
+                }
+                curr = curr.links[word.charAt(i)-'a'];
+            }
+            else {
+                boolean hasOne = false;
+                for (int j = 0; j < 26; j++) {
+                    char c = (char) ('a'+j);
+                    String s = word.substring(0,i) + c + word.substring(i+1, word.length());
+                    hasOne = search(s);
+                    if (hasOne) {
+                        return true;
+                    }
+                }
                 return false;
             }
-            node = node.getKey(word.charAt(i));
         }
-        return node.isEnd();
-    }
-    
-    /** Returns if there is any word in the trie that starts with the given prefix. */
-    public boolean startsWith(String prefix) {
-        int sz = prefix.length();
-        TrieNode node = root;
-        if (sz == 0) return true;
-        for (int i = 0; i < sz; i++) {
-            if (!node.containsKey(prefix.charAt(i))) {
-                return false;
-            }
-            node = node.getKey(prefix.charAt(i));
+        if (curr.isEnd) {
+            return true;
         }
-        return true;
+        return false;
     }
 }
 
 /**
- * Your Trie object will be instantiated and called as such:
- * Trie obj = new Trie();
- * obj.insert(word);
+ * Your WordDictionary object will be instantiated and called as such:
+ * WordDictionary obj = new WordDictionary();
+ * obj.addWord(word);
  * boolean param_2 = obj.search(word);
- * boolean param_3 = obj.startsWith(prefix);
  */
