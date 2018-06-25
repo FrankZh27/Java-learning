@@ -1,3 +1,9 @@
+/*
+Start from left to right, dp[i][j] record the minCost on the left
+if ith house paint with color j.
+
+Time complexity should be O(nkk)
+*/
 class Solution {
     public int minCostII(int[][] costs) {
         if (costs.length == 0 || costs[0].length == 0) {
